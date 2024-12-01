@@ -1,0 +1,141 @@
+24-11-30 20:47:31.100 - INFO:   name: GLARE_LOL
+  use_tb_logger: True
+  model: VQLLFLOWD
+  distortion: sr
+  scale: 1
+  gpu_ids: [0, 1]
+  dataset: LoL
+  optimize_all_z: False
+  cond_encoder: ConEncoder1
+  train_gt_ratio: 0.0
+  avg_color_map: False
+  concat_histeq: False
+  histeq_as_input: False
+  concat_color_map: False
+  gray_map: False
+  align_condition_feature: False
+  align_weight: 0.001
+  align_maxpool: True
+  to_yuv: False
+  encode_color_map: False
+  le_curve: False
+  datasets:[
+    train:[
+      root: LOLdataset
+      quant: 32
+      use_shuffle: True
+      n_workers: 1
+      batch_size: 2
+      use_resize_crop: True
+      use_flip: True
+      color: RGB
+      use_crop: True
+      GT_size: 256
+      noise_prob: 0
+      noise_level: 5
+      log_low: True
+      gamma_aug: False
+      phase: train
+      scale: 1
+      data_type: img
+    ]
+    val:[
+      root: LOLdataset
+      use_resize_crop: True
+      split: 1
+      GT_size: 256
+      n_workers: 1
+      quant: 32
+      n_max: 20
+      batch_size: 1
+      log_low: True
+      phase: val
+      scale: 1
+      data_type: img
+    ]
+  ]
+  dataroot_GT: LOLdataset/eval15/high
+  dataroot_LR: LOLdataset/eval15/low
+  model_path: LOL_pretrained_models\net_G.pth
+  heat: 0
+  network_G:[
+    which_model_G: VQLLFLOWDeformable
+    in_nc: 3
+    out_nc: 3
+    nf: 64
+    nb: 24
+    train_RRDB: False
+    train_RRDB_delay: 0.5
+    flow:[
+      K: 12
+      L: 2
+      noInitialInj: True
+      coupling: CondAffineSeparatedAndCond
+      additionalFlowNoAffine: 2
+      split:[
+        enable: False
+      ]
+      fea_up0: True
+      stackRRDB:[
+        blocks: [1, 3, 5, 7]
+        concat: True
+      ]
+    ]
+    scale: 1
+  ]
+  network_VQGAN:[
+    type: VQModel
+    resolution: 256
+    n_embed: 8192
+    embed_dim: 3
+    z_channels: 3
+    in_channels: 3
+    out_ch: 3
+    ch: 128
+    ch_mult: [1, 2, 4]
+    num_res_blocks: 2
+    attn_resolutions: [64]
+    frozen_module_keywords: ['encoder', 'quant_conv', 'quantize', 'decoder', 'post_quant_conv', 'out_conv']
+  ]
+  path:[
+    pretrain_model_G: LOL_pretrained_models\net_G.pth
+    pretrained_vqgan: LOL_pretrained_models\vqgan.pkl
+    strict_load: True
+    resume_state: auto
+    root: C:\Users\admin\Desktop\4oj4\glare\GLARE-main\GLARE-main
+    experiments_root: C:\Users\admin\Desktop\4oj4\glare\GLARE-main\GLARE-main\experiments\GLARE_LOL
+    models: C:\Users\admin\Desktop\4oj4\glare\GLARE-main\GLARE-main\experiments\GLARE_LOL\models
+    training_state: C:\Users\admin\Desktop\4oj4\glare\GLARE-main\GLARE-main\experiments\GLARE_LOL\training_state
+    log: C:\Users\admin\Desktop\4oj4\glare\GLARE-main\GLARE-main\experiments\GLARE_LOL
+    val_images: C:\Users\admin\Desktop\4oj4\glare\GLARE-main\GLARE-main\experiments\GLARE_LOL\val_images
+  ]
+  train:[
+    manual_seed: 10
+    lr_G: 5e-05
+    weight_decay_G: 0
+    beta1: 0.9
+    beta2: 0.99
+    lr_scheme: MultiStepLR
+    warmup_iter: 10
+    lr_steps_rel: [0.95]
+    lr_gamma: 0.5
+    weight_l1: 0
+    weight_fl: 1
+    niter: 20000
+    val_freq: 6666666666
+    lr_steps: [19000]
+  ]
+  val:[
+    n_sample: 4
+  ]
+  test:[
+    heats: [0.0, 0.7, 0.8, 0.9]
+  ]
+  logger:[
+    print_freq: 5
+    save_checkpoint_freq: 5.0
+  ]
+  is_train: True
+  dist: False
+
+24-11-30 20:47:31.285 - INFO: Random seed: 10
